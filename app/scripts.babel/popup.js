@@ -16,6 +16,11 @@ $(document).ready(function(){
 chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
     var url = tabs[0].url;
     console.log('url', url)
+    function constructArticleUrl(d) {
+        var similarityRounded = parseFloat(d.similarity).toFixed(2)
+        var anchor = ' <a href=' + d.url + '>' + d.title + '</a>'
+        return '<div>' + similarityRounded + anchor + '</div>'
+    }
     $.ajax({
       url: 'http://localhost:5000/url/most_similar',
       type: 'POST',
@@ -23,9 +28,9 @@ chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
       dataType: 'json',
       data: JSON.stringify({'url': url}),
       success: function(data, status, jqhxr) {
-        var articles = data.most_similar.map(d => '<a href=' + d.url + '>' + d.title + '</a>')
+        var articles = data.most_similar.map(constructArticleUrl)
         $('#recs').html('')
-        $('#recs').html(articles.join('<br>'))
+        $('#recs').html(articles.join(''))
       }
     })
 });
